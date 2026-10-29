@@ -1,0 +1,73 @@
+#define D4    4
+#define D25   25
+#define D13   13
+#define D14   14
+#define D15   15
+#include <BleCombo.h>
+
+BleComboKeyboard bleKeyboard("Prakt-A");
+
+struct matriz{
+  uint8_t ctrl; 
+  String tecla;   
+  int d25,d13,d14,d15; 
+  String push;
+  }matriz[16];
+  
+void setup() {
+  Serial.begin(115200);
+  pinMode(D4,INPUT);
+  pinMode(D25,OUTPUT);
+  pinMode(D13,OUTPUT);
+  pinMode(D14,OUTPUT);
+  pinMode(D15,OUTPUT);
+  bleKeyboard.begin();
+  Serial.println("Pronto");
+  matriz[0].d25=0;  matriz[0].d13=0;  matriz[0].d14=0; matriz[0].d15=0; matriz[0].push="Push 1";matriz[0]; matriz[0].ctrl=KEY_LEFT_CTRL; matriz[0].tecla="a"; // Selecionar tudo 
+  matriz[1].d25=0;  matriz[1].d13=0;  matriz[1].d14=0; matriz[1].d15=1; matriz[1].push="Push 2";matriz[1]; matriz[1].ctrl= KEY_LEFT_CTRL; matriz[1].tecla="c"; // Copiar
+  matriz[2].d25=0;  matriz[2].d13=0;  matriz[2].d14=1; matriz[2].d15=0; matriz[2].push="Push 3";matriz[2]; matriz[2].ctrl=KEY_LEFT_CTRL; matriz[2].tecla="v"; // Colar
+  matriz[3].d25=0;  matriz[3].d13=0;  matriz[3].d14=1; matriz[3].d15=1; matriz[3].push="Push 4";matriz[3]; matriz[3].ctrl=KEY_LEFT_CTRL; matriz[3].tecla="x"; // Recortar
+  matriz[4].d25=0;  matriz[4].d13=1;  matriz[4].d14=0; matriz[4].d15=0; matriz[4].push="Push 5";matriz[4]; matriz[4].ctrl=KEY_LEFT_CTRL; matriz[4].tecla="z"; // Desfazer 
+  matriz[5].d25=0;  matriz[5].d13=1;  matriz[5].d14=0; matriz[5].d15=1; matriz[5].push="Push 6";matriz[5]; matriz[5].ctrl=KEY_LEFT_CTRL; matriz[5].tecla="y"; // Restituir
+  matriz[6].d25=0;  matriz[6].d13=1;  matriz[6].d14=1; matriz[6].d15=0; matriz[6].push="Push 7";matriz[6]; matriz[6].ctrl=KEY_LEFT_ALT; matriz[6].tecla=String((char)KEY_TAB);; // Troca de janela
+  matriz[7].d25=0;  matriz[7].d13=1;  matriz[7].d14=1; matriz[7].d15=1; matriz[7].push="Push 8";matriz[7]; matriz[7].ctrl=KEY_LEFT_SHIFT; matriz[7].tecla="1"; //!
+  matriz[8].d25=1;  matriz[8].d13=0;  matriz[8].d14=0; matriz[8].d15=0; matriz[8].push="Push 9";matriz[8]; matriz[8].ctrl=KEY_LEFT_SHIFT; matriz[8].tecla="2"; // @
+  matriz[9].d25=1;  matriz[9].d13=0;  matriz[9].d14=0; matriz[9].d15=1; matriz[9].push="Push 10";matriz[9]; matriz[9].ctrl=KEY_LEFT_SHIFT; matriz[13].tecla="-";// _
+  matriz[10].d25=1;  matriz[10].d13=0;  matriz[10].d14=1; matriz[10].d15=0; matriz[10].push="Push 11";matriz[10]; matriz[10].ctrl=KEY_LEFT_SHIFT; matriz[10].tecla= "9"; //"("
+  matriz[11].d25=1;  matriz[11].d13=0;  matriz[11].d14=1; matriz[11].d15=1; matriz[11].push="Push 12";matriz[11]; matriz[11].ctrl=KEY_LEFT_SHIFT; matriz[11].tecla="0"; //")"
+  matriz[12].d25=1;  matriz[12].d13=1;  matriz[12].d14=0; matriz[12].d15=0; matriz[12].push="Push 13";matriz[12]; matriz[12].ctrl=KEY_LEFT_SHIFT; matriz[12].tecla="4"; // "$"
+  matriz[13].d25=1;  matriz[13].d13=1;  matriz[13].d14=0; matriz[13].d15=1; matriz[13].push="Push 14";matriz[13]; matriz[13].ctrl=KEY_LEFT_SHIFT; matriz[13].tecla="5";// %
+  matriz[14].d25=1;  matriz[14].d13=1;  matriz[14].d14=1; matriz[14].d15=0; matriz[14].push="Push 15";matriz[14]; matriz[14].ctrl=KEY_LEFT_SHIFT; matriz[14].tecla="/"; //":"  
+  matriz[15].d25=1;  matriz[15].d13=1;  matriz[15].d14=1; matriz[15].d15=1; matriz[15].push="Push 16";matriz[15]; matriz[15].ctrl=KEY_LEFT_SHIFT; matriz[15].tecla= "'"; //^
+  
+}
+
+void loop() {
+
+  for (int i=0;i<16;i++){
+    digitalWrite(D25,matriz[i].d25);
+    digitalWrite(D13,matriz[i].d13);
+    digitalWrite(D14,matriz[i].d14);
+    digitalWrite(D15,matriz[i].d15);
+    delay(25);
+    int sinal=0;
+    sinal=digitalRead(D4);
+    if (sinal > 0) {
+  Serial.println(matriz[i].push);
+  sinal = 0;
+  
+  if (matriz[i].ctrl > 0) {
+    bleKeyboard.press(matriz[i].ctrl);
+  }
+  
+  bleKeyboard.print(matriz[i].tecla);
+  
+    delay(50);
+    bleKeyboard.releaseAll();
+    delayMicroseconds(250); 
+
+}
+  }
+    delay(25);
+
+}
